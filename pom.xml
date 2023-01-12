@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.saltfun.daocalendar</groupId>
+    <artifactId>Daocalendar</artifactId>
+    <version>1.6.54-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Daocalendar Parent</name>
+    <description>ZenMan Daocalendar</description>
+    <inceptionYear>2012</inceptionYear>
+
+    <url>https://www.xiaozheng.space/</url>
+    <modules>
+        <module>daocalendar</module>
+        <module>daodialog</module>
+    </modules>
+
+    <organization>
+        <name>Zenman</name>
+        <url>https://xiaozheng.space</url>
+    </organization>
+
+    <properties>
+        <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <javafx.version>17</javafx.version>
+        <aether.version>1.1.0</aether.version>
+        <charm.glisten.version>5.0.0-jdk9</charm.glisten.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <destiny.version>0.0.1</destiny.version>
+        <kotlin.version>1.6.0</kotlin.version>
+        <kotlin.serialization.version>1.2.2</kotlin.serialization.version>
+        <kotlin.coroutine.version>1.5.1</kotlin.coroutine.version>
+        <spring.version>5.3.9</spring.version>
+        <spring.batch.version>4.3.3</spring.batch.version>
+        <slf4j.version>1.7.28</slf4j.version>
+        <hibernate.version>5.4.32.Final</hibernate.version>
+        <mysql.version>8.0.25</mysql.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <javamail.version>1.6.2</javamail.version>
+        <junit-jupiter.version>5.7.1</junit-jupiter.version>
+        <ktor.version>1.6.1</ktor.version>
+
+        <version.eclipse-swt>3.119.0</version.eclipse-swt>
+        <version.eclipse-jface>3.25.0</version.eclipse-jface>
+        <version.eclipse-commands>3.9.400</version.eclipse-commands>
+        <version.eclipse-common>3.10.400</version.eclipse-common>
+        <version.swingexplorer>1.7.0</version.swingexplorer>
+
+
+    </properties>
+    <repositories>
+        <repository>
+            <id>local1</id>
+            <name>Local Repository</name>
+            <url>file://${project.basedir}/../repository</url>
+        </repository>
+    </repositories>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-maven-plugin</artifactId>
+                    <version>0.0.5</version>
+                    <configuration>
+                        <!--            <mainClass>${main.class.name}</mainClass>-->
+                        <options>
+                            <option>--add-opens=javafx.fxml/javafx.fxml=ALL-UNNAMED</option>
+                        </options>
+                    </configuration>
+                </plugin>
+
+                <!-- Build KIT wherever parent is cleaned -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <verbose>false</verbose>
+                        <showWarnings>true</showWarnings>
+                        <useIncrementalCompilation>false</useIncrementalCompilation>
+                    </configuration>
+                </plugin>
+
+                <!-- Deploy to Maven Central -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                    <inherited>false</inherited>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <licenses>
+        <license>
+            <name>BSD 3-Clause</name>
+            <url>https://opensource.org/licenses/BSD-3-Clause</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+</project>
