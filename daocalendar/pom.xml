@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.saltfun.daocalendar</groupId>
-        <artifactId>Daocalendar</artifactId>
+        <artifactId>Daocalendar-Parent</artifactId>
         <version>1.6.54-SNAPSHOT</version>
     </parent>
     <artifactId>daocalendar</artifactId>

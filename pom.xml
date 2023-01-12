@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.saltfun.daocalendar</groupId>
-    <artifactId>Daocalendar</artifactId>
+    <artifactId>Daocalendar-Parent</artifactId>
     <version>1.6.54-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Daocalendar Parent</name>
@@ -15,6 +15,7 @@
     <modules>
         <module>daocalendar</module>
         <module>daodialog</module>
+        <module>jplunisolar</module>
     </modules>
 
     <organization>
@@ -23,6 +24,17 @@
     </organization>
 
     <properties>
+        <daocalendar.version>0.0.1</daocalendar.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
+
+        <kotlin.version>1.8.0</kotlin.version>
+        <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
+        <kotlin.compiler.incremental>false</kotlin.compiler.incremental>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
         <javafx.version>17</javafx.version>
         <aether.version>1.1.0</aether.version>
@@ -56,12 +68,35 @@
     </properties>
     <repositories>
         <repository>
+            <id>jboss-public-repository</id>
+            <name>JBoss Repository</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public</url>
+            <!-- These optional flags are designed to speed up your builds by reducing remote server calls -->
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
             <id>local1</id>
             <name>Local Repository</name>
             <url>file://${project.basedir}/../repository</url>
         </repository>
     </repositories>
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/java</directory>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/kotlin</directory>
+            </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -82,13 +117,115 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
                         <encoding>UTF-8</encoding>
                         <verbose>false</verbose>
                         <showWarnings>true</showWarnings>
                         <useIncrementalCompilation>false</useIncrementalCompilation>
                     </configuration>
+                    <executions>
+                        <!-- Replacing default-compile as it is treated specially by maven -->
+                        <execution>
+                            <id>default-compile</id>
+                            <phase>none</phase>
+                        </execution>
+                        <execution>
+                            <id>default-testCompile</id>
+                            <phase>none</phase>
+                        </execution>
+                        <execution>
+                            <id>compile</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>testCompile</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.2</version>
+                    <configuration>
+                        <skipTests>true</skipTests>
+                    </configuration>
                 </plugin>
 
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.3.0</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>**/logback.xml</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>org.basepom.maven</groupId>
+                    <artifactId>duplicate-finder-maven-plugin</artifactId>
+                    <version>1.5.0</version>
+                    <executions>
+                        <execution>
+                            <id>Check for Duplications</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.8.1</version>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>display-dependency-updates</goal>
+                                <goal>display-plugin-updates</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <excludes>
+                            <exclude>javax.servlet:javax.servlet-api</exclude>
+                            <exclude>com.google.guava:guava</exclude> <!-- avoid android version -->
+                        </excludes>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-maven</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>3.8.6</version>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
                 <!-- Deploy to Maven Central -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -105,8 +242,8 @@
 
     <licenses>
         <license>
-            <name>BSD 3-Clause</name>
-            <url>https://opensource.org/licenses/BSD-3-Clause</url>
+            <name>MulanPubL-2.0</name>
+            <url>http://license.coscl.org.cn/MulanPubL-2.0</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -121,5 +258,177 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+    <!-- ============================================================== -->
 
+    <!-- This section defines the path to natives. Debug how the OS and CPU
+        names are detected by maven with mvn enforcer:display-info -->
+
+    <profiles>
+        <!-- Unix related settings -->
+        <profile>
+            <id>Unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+
+            <properties>
+                <vtk.platform>Linux-x86_64</vtk.platform>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M5</version>
+                        <configuration>
+                            <!-- Ensure stack trace get displayed -->
+                            <trimStackTrace>false</trimStackTrace>
+
+                            <!-- Parallel tests DISABLE PARALLEL TEST OTHERWISE CANVAS DO NOT UPDATE
+                                PROPERLY (?!)
+                                <parallel>classes</parallel> <useUnlimitedThreads>true</useUnlimitedThreads>
+                                <forkCount>1</forkCount>-->
+
+                            <!-- Configure Panama -->
+                            <argLine>
+                                --enable-native-access=ALL-UNNAMED --add-modules jdk.incubator.foreign -Djava.library.path=.:/usr/lib/x86_64-linux-gnu/
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Mac Intel related settings -->
+        <profile>
+            <id>MacOS x86_64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+
+            <properties>
+                <vtk.platform>Darwin-x86_64</vtk.platform>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M5</version>
+                        <configuration>
+                            <!-- Ensure stack trace get displayed -->
+                            <trimStackTrace>false</trimStackTrace>
+
+                            <!-- Parallel tests DISABLE PARALLEL TEST OTHERWISE CANVAS DO NOT UPDATE
+                                PROPERLY (?!)
+                                <parallel>classes</parallel> <useUnlimitedThreads>true</useUnlimitedThreads>
+                                <forkCount>1</forkCount>-->
+
+                            <!-- Configure Panama -->
+                            <argLine>
+                                -XstartOnFirstThread --enable-native-access=ALL-UNNAMED --add-modules jdk.incubator.foreign -Djava.library.path=.:/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries/
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Mac M1 related settings -->
+        <profile>
+            <id>MacOS Aarch64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+
+            <properties>
+                <vtk.platform>Darwin-arm64</vtk.platform>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M5</version>
+                        <configuration>
+                            <!-- Ensure stack trace get displayed -->
+                            <trimStackTrace>false</trimStackTrace>
+
+                            <!-- Parallel tests DISABLE PARALLEL TEST OTHERWISE CANVAS DO NOT UPDATE
+                                PROPERLY (?!)
+                                <parallel>classes</parallel> <useUnlimitedThreads>true</useUnlimitedThreads>
+                                <forkCount>1</forkCount>-->
+
+                            <!-- Configure Panama -->
+                            <argLine>
+                                -XstartOnFirstThread --enable-native-access=ALL-UNNAMED --add-modules jdk.incubator.foreign -Djava.library.path=.:/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries/
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Windows related settings -->
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+
+            <properties>
+                <vtk.platform>Windows-x86_64</vtk.platform>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M5</version>
+                        <configuration>
+                            <!-- Ensure stack trace get displayed -->
+                            <trimStackTrace>false</trimStackTrace>
+
+                            <!-- Parallel tests DISABLE PARALLEL TEST OTHERWISE CANVAS DO NOT UPDATE
+                                PROPERLY (?!)
+                                <parallel>classes</parallel> <useUnlimitedThreads>true</useUnlimitedThreads>
+                                <forkCount>1</forkCount>-->
+
+                            <!-- Configure Panama -->
+                            <argLine>
+                                -XstartOnFirstThread --enable-native-access=ALL-UNNAMED --add-modules jdk.incubator.foreign -Djava.library.path=.:/System/Library/Frameworks/OpenGL.framework/Versions/Current/Libraries/
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <!-- JDK related activations -->
+        <profile>
+            <id>disable-java8-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+
+    </profiles>
 </project>
