@@ -13,6 +13,7 @@
 
     <url>https://www.xiaozheng.space/</url>
     <modules>
+        <module>daofont</module>
         <module>daocalendar</module>
         <module>daodialog</module>
         <module>jplunisolar</module>
